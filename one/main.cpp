@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-enum class State { kEmpty, kObstacle };
+enum class State { kEmpty, kObstacle, kClosed };
 
 std::vector<std::vector<int>> CreateBoard() {
   std::vector<std::vector<int>> board{{0, 1, 0, 0, 0, 0},
@@ -68,12 +68,23 @@ void PrintBoard(std::vector<std::vector<State>> board) {
 }
 
 /**
-* @brief compute a heuristic between a pair of 2D coordinates.
-*        the manhatten distance is calculated.
-*/
-int Heuristic(const int x1, const int y1, const int x2, const int y2){
+ * @brief compute a heuristic between a pair of 2D coordinates.
+ *        the manhatten distance is calculated.
+ */
+int Heuristic(const int x1, const int y1, const int x2, const int y2) {
   // TODO: try other admissible heuristics
-  return std::abs(x2-x1) + std::abs(y2-y1);
+  return std::abs(x2 - x1) + std::abs(y2 - y1);
+}
+
+/**
+ * @brief add a node to the open vector and mark their position as visited in the grid
+ *
+ */
+void AddToOpen(int x, int y, int g, int h,
+               std::vector<std::vector<int>> open_nodes,
+               std::vector<std::vector<State>> grid) {                 
+  open_nodes.push_back(std::vector<int>{x, y, g, h});
+  grid.at(x).at(y) = State::kClosed;  
 }
 
 /**
@@ -103,7 +114,7 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
   return grid;
 }
 
-#include "test.cpp" // For testing solution
+#include "test.cpp"  // For testing solution
 
 int main() {
   // Tests
@@ -121,7 +132,6 @@ int main() {
   auto board_with_path = Search(board, initial_point, goal_point);
 
   PrintBoard(board_with_path);
-
 
   return 1;
 }
