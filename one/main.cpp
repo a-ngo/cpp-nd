@@ -47,14 +47,14 @@ std::vector<std::vector<State>> ReadBoard(std::string path_to_board) {
 std::string CellString(State state) {
   std::string state_string;
   switch (state) {
-    case State::kEmpty:
-      state_string = "0   ";
-      break;
     case State::kObstacle:
       state_string = "⛰️   ";
       break;
+    case State::kPath:
+      state_string = "🚗  ";
+      break;
     default:
-      std::cerr << "Not supported state!" << std::endl;
+      state_string = "0   ";
   }
   return state_string;
 }
@@ -90,8 +90,8 @@ void AddToOpen(int x, int y, int g, int h,
 }
 
 /**
- * @brief sort (descending) open nodes by f-value
- * @pre assume that f-value is the third value
+ * @brief sort (descending) open nodes by h-value
+ * @pre assume that h-value is the third value
  *
  */
 void CellSort(std::vector<std::vector<int>> &open_nodes) {
@@ -99,6 +99,50 @@ void CellSort(std::vector<std::vector<int>> &open_nodes) {
             [](const std::vector<int> &v1, const std::vector<int> &v2) {
               return v1.at(3) > v2.at(3);
             });
+}
+
+/**
+ * @brief checks if a given neighbor cell is valid, i.e. it hasn't been closed
+ *        and is not an obstacle
+ *
+ * @return returns true if valid cell
+ */
+bool CheckValidCell(int x, int y, const std::vector<std::vector<State>> &grid) {
+  // check if position is on the grid
+  bool not_on_grid_x = x >= grid.size() && x < 0;
+  bool not_on_grid_y = y >= grid[0].size() && y < 0;
+  if (not_on_grid_x && not_on_grid_y) {
+    return false;
+  }
+  return grid.at(x).at(y) == State::kEmpty;
+}
+
+/**
+ * @brief loop through the current nodes neighbors and add valid neighbors to
+ * the open list
+ *
+ */
+void ExpandNeighbors(const std::vector<int> &current_node,
+                     const std::vector<int> &goal_point,
+                     std::vector<std::vector<int>> &open_nodes,
+                     std::vector<std::vector<State>> &grid) {
+  int current_node_pos_x = current_node.at(0);
+  int current_node_pos_y = current_node.at(1);
+  int g = current_node.at(2);
+
+  // loop over neighbors
+  std::vector<std::vector<int>> delta{{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+  for (auto d : delta) {
+    int neighbor_x{current_node_pos_x + d.at(0)};
+    int neighbor_y{current_node_pos_y + d.at(1)};
+    if (CheckValidCell(neighbor_x, neighbor_y, grid)) {
+      int neighbor_g = g + 1;
+      int neighbor_h =
+          Heuristic(neighbor_x, neighbor_y, goal_point.at(0), goal_point.at(1));
+      AddToOpen(neighbor_x, neighbor_y, neighbor_g, neighbor_h, open_nodes,
+                grid);
+    }
+  }
 }
 
 /**
@@ -121,25 +165,20 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
   while (open_nodes.size() > 0) {
     CellSort(open_nodes);
     auto current_node = open_nodes.back();
-
+    open_nodes.pop_back();
     grid.at(current_node.at(0)).at(current_node.at(1)) = State::kPath;
 
     if (current_node == goal_point) {
       std::cout << "Goal is reached!" << std::endl;
       return grid;
     }
-    open_nodes.pop_back();
 
-    // ExpandNeighbors();
-
-    // CheckValidCell();
-
-    // Heuristic();
-
-    // AddToOpen();
+    // loop through the current nodes neighbors and add valid neighbors to the
+    // open list
+    //ExpandNeighbors(current_node, goal_point, open_nodes, grid);
   }
-  std::cout << "Goal was not reached!" << std::endl;
-  return grid;
+  std::cout << "No path found!" << std::endl;
+  return std::vector<std::vector<State>>{};
 }
 
 #include "test.cpp"  // For testing solution
@@ -149,6 +188,8 @@ int main() {
   TestHeuristic();
   TestAddToOpen();
   TestSearch();
+  TestCheckValidCell();
+  TestExpandNeighbors();
 
   // TODO: measure runtime
   // read or create a board
