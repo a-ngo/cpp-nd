@@ -1,10 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-enum class State { kEmpty, kObstacle, kClosed };
+enum class State { kEmpty, kObstacle, kClosed, kPath };
 
 std::vector<std::vector<int>> CreateBoard() {
   std::vector<std::vector<int>> board{{0, 1, 0, 0, 0, 0},
@@ -77,14 +78,27 @@ int Heuristic(const int x1, const int y1, const int x2, const int y2) {
 }
 
 /**
- * @brief add a node to the open vector and mark their position as visited in the grid
+ * @brief add a node to the open vector and mark their position as visited in
+ * the grid
  *
  */
 void AddToOpen(int x, int y, int g, int h,
-               std::vector<std::vector<int>> open_nodes,
-               std::vector<std::vector<State>> grid) {                 
+               std::vector<std::vector<int>> &open_nodes,
+               std::vector<std::vector<State>> &grid) {
   open_nodes.push_back(std::vector<int>{x, y, g, h});
-  grid.at(x).at(y) = State::kClosed;  
+  grid.at(x).at(y) = State::kClosed;
+}
+
+/**
+ * @brief sort (descending) open nodes by f-value
+ * @pre assume that f-value is the third value
+ *
+ */
+void CellSort(std::vector<std::vector<int>> &open_nodes) {
+  std::sort(open_nodes.begin(), open_nodes.end(),
+            [](const std::vector<int> &v1, const std::vector<int> &v2) {
+              return v1.at(3) > v2.at(3);
+            });
 }
 
 /**
@@ -95,22 +109,36 @@ void AddToOpen(int x, int y, int g, int h,
 std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
                                        std::vector<int> initial_point,
                                        std::vector<int> goal_point) {
-  // 1. initlize empty list of open nodes based on input grid/board
-  std::vector<std::vector<State>> open_nodes;
+  std::vector<std::vector<int>> open_nodes;
 
-  // 2. initialize a starting node and add to open list
+  // initialize a starting node and add to open list
+  std::vector<int> starting_node{
+      initial_point.at(0), initial_point.at(1), 0,
+      Heuristic(initial_point.at(0), initial_point.at(1), goal_point.at(0),
+                goal_point.at(1))};
+  open_nodes.push_back(starting_node);
 
-  // 3. while list of open nodes is non empty
-  // CellSort();
+  while (open_nodes.size() > 0) {
+    CellSort(open_nodes);
+    auto current_node = open_nodes.back();
 
-  // ExpandNeighbors();
+    grid.at(current_node.at(0)).at(current_node.at(1)) = State::kPath;
 
-  // CheckValidCell();
+    if (current_node == goal_point) {
+      std::cout << "Goal is reached!" << std::endl;
+      return grid;
+    }
+    open_nodes.pop_back();
 
-  // Heuristic();
+    // ExpandNeighbors();
 
-  // AddToOpen();
+    // CheckValidCell();
 
+    // Heuristic();
+
+    // AddToOpen();
+  }
+  std::cout << "Goal was not reached!" << std::endl;
   return grid;
 }
 
@@ -119,6 +147,8 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
 int main() {
   // Tests
   TestHeuristic();
+  TestAddToOpen();
+  TestSearch();
 
   // TODO: measure runtime
   // read or create a board
