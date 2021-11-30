@@ -109,9 +109,9 @@ void CellSort(std::vector<std::vector<int>> &open_nodes) {
  */
 bool CheckValidCell(int x, int y, const std::vector<std::vector<State>> &grid) {
   // check if position is on the grid
-  bool not_on_grid_x = x >= grid.size() && x < 0;
-  bool not_on_grid_y = y >= grid[0].size() && y < 0;
-  if (not_on_grid_x && not_on_grid_y) {
+  bool not_on_grid_x = x >= grid.size() || x < 0;
+  bool not_on_grid_y = y >= grid[0].size() || y < 0;
+  if (not_on_grid_x || not_on_grid_y) {
     return false;
   }
   return grid.at(x).at(y) == State::kEmpty;
@@ -133,8 +133,8 @@ void ExpandNeighbors(const std::vector<int> &current_node,
   // loop over neighbors
   std::vector<std::vector<int>> delta{{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
   for (auto d : delta) {
-    int neighbor_x{current_node_pos_x + d.at(0)};
-    int neighbor_y{current_node_pos_y + d.at(1)};
+    int neighbor_x = current_node_pos_x + d.at(0);
+    int neighbor_y = current_node_pos_y + d.at(1);
     if (CheckValidCell(neighbor_x, neighbor_y, grid)) {
       int neighbor_g = g + 1;
       int neighbor_h =
@@ -153,14 +153,14 @@ void ExpandNeighbors(const std::vector<int> &current_node,
 std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
                                        std::vector<int> initial_point,
                                        std::vector<int> goal_point) {
-  std::vector<std::vector<int>> open_nodes;
+  std::vector<std::vector<int>> open_nodes{};
 
   // initialize a starting node and add to open list
-  std::vector<int> starting_node{
-      initial_point.at(0), initial_point.at(1), 0,
-      Heuristic(initial_point.at(0), initial_point.at(1), goal_point.at(0),
-                goal_point.at(1))};
-  open_nodes.push_back(starting_node);
+  int x = initial_point.at(0);
+  int y = initial_point.at(1);
+  int g = 0;
+  int h = Heuristic(x, y, goal_point.at(0), goal_point.at(1));
+  AddToOpen(x, y, g, h, open_nodes, grid);
 
   while (open_nodes.size() > 0) {
     CellSort(open_nodes);
@@ -168,14 +168,15 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
     open_nodes.pop_back();
     grid.at(current_node.at(0)).at(current_node.at(1)) = State::kPath;
 
-    if (current_node == goal_point) {
+    if (current_node.at(0) == goal_point.at(0) &&
+        current_node.at(1) == goal_point.at(1)) {
       std::cout << "Goal is reached!" << std::endl;
       return grid;
     }
 
     // loop through the current nodes neighbors and add valid neighbors to the
     // open list
-    //ExpandNeighbors(current_node, goal_point, open_nodes, grid);
+    ExpandNeighbors(current_node, goal_point, open_nodes, grid);
   }
   std::cout << "No path found!" << std::endl;
   return std::vector<std::vector<State>>{};
