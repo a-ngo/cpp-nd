@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-enum class State { kEmpty, kObstacle, kClosed, kPath };
+enum class State { kEmpty, kObstacle, kClosed, kPath, kStart, kFinish };
 
 std::vector<std::vector<int>> CreateBoard() {
   std::vector<std::vector<int>> board{{0, 1, 0, 0, 0, 0},
@@ -52,6 +52,12 @@ std::string CellString(State state) {
       break;
     case State::kPath:
       state_string = "🚗  ";
+      break;
+    case State::kStart:
+      state_string = "🚦  ";
+      break;
+    case State::kFinish:
+      state_string = "🏁  ";
       break;
     default:
       state_string = "0   ";
@@ -154,13 +160,13 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
                                        std::vector<int> initial_point,
                                        std::vector<int> goal_point) {
   std::vector<std::vector<int>> open_nodes{};
-
+  
   // initialize a starting node and add to open list
-  int x = initial_point.at(0);
-  int y = initial_point.at(1);
+  int initial_point_x = initial_point.at(0);
+  int initial_point_y = initial_point.at(1);
   int g = 0;
-  int h = Heuristic(x, y, goal_point.at(0), goal_point.at(1));
-  AddToOpen(x, y, g, h, open_nodes, grid);
+  int h = Heuristic(initial_point_x, initial_point_y, goal_point.at(0), goal_point.at(1));
+  AddToOpen(initial_point_x, initial_point_y, g, h, open_nodes, grid);
 
   while (open_nodes.size() > 0) {
     CellSort(open_nodes);
@@ -170,6 +176,9 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
 
     if (current_node.at(0) == goal_point.at(0) &&
         current_node.at(1) == goal_point.at(1)) {
+      // set start and finish point
+      grid.at(initial_point_x).at(initial_point_y) = State::kStart;
+      grid.at(goal_point.at(0)).at(goal_point.at(1)) = State::kFinish;
       std::cout << "Goal is reached!" << std::endl;
       return grid;
     }
