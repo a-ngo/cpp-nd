@@ -179,7 +179,7 @@ std::vector<std::vector<State>> Search(std::vector<std::vector<State>> grid,
     ExpandNeighbors(current_node, goal_point, open_nodes, grid);
   }
   std::cout << "No path found!" << std::endl;
-  return std::vector<std::vector<State>>{};
+  return grid;
 }
 
 #include "test.cpp"  // For testing solution
@@ -200,7 +200,7 @@ int main() {
 
   // A* path search function
   std::vector<int> initial_point{0, 0};
-  std::vector<int> goal_point{5, 5};
+  std::vector<int> goal_point{4, 5};
   auto board_with_path = Search(board, initial_point, goal_point);
 
   PrintBoard(board_with_path);
