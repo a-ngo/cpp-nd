@@ -71,6 +71,7 @@
         "regex": "cpp",
         "future": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "plane": "cpp"
     }
 }
