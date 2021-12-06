@@ -47,14 +47,21 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
   }
 }
 
-// TODO 5: Complete the NextNode method to sort the open list and return the
+// TASK 5: Complete the NextNode method to sort the open list and return the
 // next node. Tips:
 // - Sort the open_list according to the sum of the h value and g value.
 // - Create a pointer to the node in the list with the lowest sum.
 // - Remove that node from the open_list.
 // - Return the pointer.
-
-RouteModel::Node *RoutePlanner::NextNode() {}
+RouteModel::Node *RoutePlanner::NextNode() {
+  std::sort(this->open_list.begin(), this->open_list.end(),
+            [](const RouteModel::Node* v1, const RouteModel::Node* v2) {
+              return v1->h_value + v1->g_value  > v2->h_value + v2->g_value;
+            });
+  auto next_node = open_list.back();
+  open_list.pop_back();
+  return next_node;
+}
 
 // TODO 6: Complete the ConstructFinalPath method to return the final path found
 // from your A* search. Tips:
@@ -66,7 +73,6 @@ RouteModel::Node *RoutePlanner::NextNode() {}
 // - The returned vector should be in the correct order: the start node should
 // be the first element
 //   of the vector, the end node should be the last element.
-
 std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(
     RouteModel::Node *current_node) {
   // Create path_found vector

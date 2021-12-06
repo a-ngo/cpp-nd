@@ -72,6 +72,7 @@
         "future": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "plane": "cpp"
+        "plane": "cpp",
+        "node": "cpp"
     }
 }
