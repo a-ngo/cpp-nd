@@ -40,7 +40,7 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
   current_node->FindNeighbors();
   for (auto neighbor : current_node->neighbors) {
     neighbor->parent = current_node;
-    neighbor->g_value = neighbor->distance(*current_node);
+    neighbor->g_value = current_node->g_value + neighbor->distance(*current_node);
     neighbor->h_value = CalculateHValue(neighbor);
     neighbor->visited = true;
     this->open_list.emplace_back(neighbor);
@@ -54,9 +54,10 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Remove that node from the open_list.
 // - Return the pointer.
 RouteModel::Node *RoutePlanner::NextNode() {
+  // sort with a decreasing order
   std::sort(this->open_list.begin(), this->open_list.end(),
-            [](const RouteModel::Node* v1, const RouteModel::Node* v2) {
-              return v1->h_value + v1->g_value  > v2->h_value + v2->g_value;
+            [](const RouteModel::Node *v1, const RouteModel::Node *v2) {
+              return v1->h_value + v1->g_value > v2->h_value + v2->g_value;
             });
   auto next_node = open_list.back();
   open_list.pop_back();
@@ -81,12 +82,13 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(
 
   // TODO: Implement your solution here.
 
+
   distance *= m_Model.MetricScale();  // Multiply the distance by the scale of
                                       // the map to get meters.
   return path_found;
 }
 
-// TODO 7: Write the A* Search algorithm here.
+// TASK 7: Write the A* Search algorithm here.
 // Tips:
 // - Use the AddNeighbors method to add all of the neighbors of the current node
 // to the open_list.
@@ -95,9 +97,16 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(
 // to return the final path that was found.
 // - Store the final path in the m_Model.path attribute before the method exits.
 // This path will then be displayed on the map tile.
-
 void RoutePlanner::AStarSearch() {
   RouteModel::Node *current_node = nullptr;
 
-  // TODO: Implement your solution here.
+  while (this->open_list.size() > 0) {
+    RouteModel::Node *next_node = NextNode();
+    if (next_node->x == this->end_node->x &&
+        next_node->y == this->end_node->y) {
+      m_Model.path = ConstructFinalPath(next_node);
+    } else {
+     AddNeighbors(next_node);
+    }
+  }
 }
