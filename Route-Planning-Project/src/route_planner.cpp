@@ -60,8 +60,8 @@ RouteModel::Node *RoutePlanner::NextNode() {
             [](const RouteModel::Node *v1, const RouteModel::Node *v2) {
               return v1->h_value + v1->g_value > v2->h_value + v2->g_value;
             });
-  auto next_node = open_list.back();
-  open_list.pop_back();
+  auto next_node = this->open_list.back();
+  this->open_list.pop_back();
   return next_node;
 }
 
@@ -107,13 +107,19 @@ std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(
 void RoutePlanner::AStarSearch() {
   RouteModel::Node *current_node = nullptr;
 
+  // TODO: fix
+  current_node = this->start_node;
+  AddNeighbors(current_node);
+
   while (this->open_list.size() > 0) {
     RouteModel::Node *next_node = NextNode();
     if (next_node->x == this->end_node->x &&
         next_node->y == this->end_node->y) {
       m_Model.path = ConstructFinalPath(next_node);
+      break;
     } else {
       AddNeighbors(next_node);
     }
   }
+
 }
