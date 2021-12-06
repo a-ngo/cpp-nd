@@ -60,6 +60,17 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "state": "cpp"
+        "state": "cpp",
+        "csignal": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp",
+        "forward_list": "cpp",
+        "unordered_set": "cpp",
+        "filesystem": "cpp",
+        "random": "cpp",
+        "regex": "cpp",
+        "future": "cpp",
+        "valarray": "cpp",
+        "variant": "cpp"
     }
 }
