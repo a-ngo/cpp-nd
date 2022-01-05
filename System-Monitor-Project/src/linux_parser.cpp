@@ -68,8 +68,29 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+float LinuxParser::MemoryUtilization() {
+  string memory_utilization;
+  string line, key, value, unit;
+  std::ifstream stream(kProcDirectory + kMeminfoFilename);
+  float mem_total, mem_free, mem_utilization;
+
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value >> unit) {
+        if (key == "MemTotal:") {
+          mem_total = stoi(value);
+        }
+
+        if (key == "MemFree:") {
+          mem_free = stoi(value);
+        }
+      }
+    }
+  }
+
+  return (mem_total - mem_free) / mem_total;
+}
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { return 0; }
@@ -90,11 +111,45 @@ long LinuxParser::IdleJiffies() { return 0; }
 // TODO: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() { return {}; }
 
-// TODO: Read and return the total number of processes
-int LinuxParser::TotalProcesses() { return 0; }
+int LinuxParser::TotalProcesses() {
+  int total_processes;
+  string line, key, value;
 
-// TODO: Read and return the number of running processes
-int LinuxParser::RunningProcesses() { return 0; }
+  std::ifstream stream(kProcDirectory + kStatFilename);
+
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "processes") {
+          total_processes = stoi(value);
+        }
+      }
+    }
+  }
+
+  return total_processes;
+}
+
+int LinuxParser::RunningProcesses() {
+  int running_processes;
+  string line, key, value;
+
+  std::ifstream stream(kProcDirectory + kStatFilename);
+
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      while (linestream >> key >> value) {
+        if (key == "procs_running") {
+          running_processes = stoi(value);
+        }
+      }
+    }
+  }
+
+  return running_processes;
+ }
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
