@@ -92,8 +92,18 @@ float LinuxParser::MemoryUtilization() {
   return (mem_total - mem_free) / mem_total;
 }
 
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
+long LinuxParser::UpTime() {
+  string line, up_time_string, idle_time_string;
+  std::ifstream stream(kProcDirectory + kUptimeFilename);
+
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    linestream >> up_time_string >> idle_time_string;
+  }
+
+  return stoi(up_time_string);
+}
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }
@@ -149,7 +159,7 @@ int LinuxParser::RunningProcesses() {
   }
 
   return running_processes;
- }
+}
 
 // TODO: Read and return the command associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
@@ -169,4 +179,4 @@ string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+long LinuxParser::UpTime(int pid [[maybe_unused]]) {return 0;}
