@@ -3,10 +3,13 @@
 
 class Processor {
  public:
+  Processor();
   float Utilization();
 
-  // TODO: Declare any necessary private members
  private:
+  long m_idle_jiffies;
+  long m_active_jiffies;
+  long m_total_jiffies;
 };
 
 #endif

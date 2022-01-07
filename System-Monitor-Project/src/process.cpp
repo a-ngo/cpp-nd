@@ -7,30 +7,40 @@
 #include <string>
 #include <vector>
 
+#include "linux_parser.h"
+
 using std::string;
 using std::to_string;
 using std::vector;
 
-// TODO: Return this process's ID
-int Process::Pid() { return 0; }
+Process::Process(const int id) : m_id(id) {
+  m_user_name = LinuxParser::User(m_id);
+  m_command = LinuxParser::Command(m_id);
+}
 
-// TODO: Return this process's CPU utilization
-float Process::CpuUtilization() { return 0; }
+int Process::Id() { return this->m_id; }
 
-// TODO: Return the command that generated this process
-string Process::Command() { return string(); }
+float Process::GetCpuUtilization() const { return this->m_cpu_utilization; }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+float Process::CpuUtilization() {
+  const int up_time = LinuxParser::UpTime();
+  const int total_time_active = LinuxParser::ActiveJiffies(m_id);
+  const int process_up_time = LinuxParser::UpTime(m_id);
 
-// TODO: Return the user (name) that generated this process
-string Process::User() { return string(); }
+  const float total_time = up_time - process_up_time;
 
-// TODO: Return the age of this process (in seconds)
-long int Process::UpTime() { return 0; }
+  this->m_cpu_utilization = total_time_active / total_time;
+  return this->m_cpu_utilization;
+}
 
-// TODO: Overload the "less than" comparison operator for Process objects
-// REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  return true;
+string Process::Command() { return this->m_command; }
+
+string Process::Ram() { return LinuxParser::Ram(this->m_id); }
+
+string Process::User() { return this->m_user_name; }
+
+long int Process::UpTime() { return LinuxParser::UpTime(this->m_id); }
+
+bool Process::operator>(Process const& a) const {
+  return this->m_cpu_utilization > a.m_cpu_utilization;
 }

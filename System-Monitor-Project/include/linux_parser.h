@@ -38,9 +38,10 @@ enum CPUStates {
   kSoftIRQ_,
   kSteal_,
   kGuest_,
-  kGuestNice_
+  kGuestNice_,
+  End
 };
-std::vector<std::string> CpuUtilization();
+std::vector<long> CpuUtilization();
 long Jiffies();
 long ActiveJiffies();
 long ActiveJiffies(int pid);
@@ -52,6 +53,11 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long int UpTime(int pid);
+
+// Helper
+template <typename T>
+T ReadStringValueFromFile(const std::string& path, const std::string& search_string);
+
 };  // namespace LinuxParser
 
 #endif

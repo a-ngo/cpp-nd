@@ -19,11 +19,35 @@ system."
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
-// TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu_; }
+Processor& System::Cpu() { return m_cpu; }
 
-// TODO: Return a container composed of the system's processes
-std::vector<Process>& System::Processes() { return processes_; }
+std::vector<Process>& System::Processes() {
+  std::set<int> unique_ids;
+  for (Process process : m_processes) {
+    unique_ids.insert(process.Id());
+  }
+
+  std::vector<int> ids = LinuxParser::Pids();
+  for (int id : ids) {
+    if (unique_ids.find(id) == unique_ids.end()) {
+      m_processes.emplace_back(Process(id));
+    }
+  }
+
+  for (Process& process : m_processes) {
+    process.CpuUtilization();
+  }
+
+  std::sort(m_processes.begin(), m_processes.end(), std::greater<Process>());
+
+  // alternatively via lambda
+  // std::sort(m_processes.begin(), m_processes.end(), [] (const Process& a, const Process& b) {
+  //   return a.GetCpuUtilization() > b.GetCpuUtilization();
+  // }
+  // );
+
+  return m_processes;
+}
 
 std::string System::Kernel() { return LinuxParser::Kernel(); }
 
