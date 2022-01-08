@@ -39,7 +39,7 @@ string Process::Ram() { return LinuxParser::Ram(this->m_id); }
 
 string Process::User() { return this->m_user_name; }
 
-long int Process::UpTime() { return LinuxParser::UpTime(this->m_id); }
+long int Process::UpTime() { return LinuxParser::UpTime() - LinuxParser::UpTime(this->m_id); }
 
 bool Process::operator>(Process const& a) const {
   return this->m_cpu_utilization > a.m_cpu_utilization;

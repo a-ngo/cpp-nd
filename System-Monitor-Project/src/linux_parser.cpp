@@ -70,9 +70,10 @@ vector<int> LinuxParser::Pids() {
 
 float LinuxParser::MemoryUtilization() {
   string memory_utilization;
-  string line, key, value, unit;
+  string line;
+  string key, value, unit;
   std::ifstream stream(kProcDirectory + kMeminfoFilename);
-  float mem_total, mem_free, mem_utilization;
+  float mem_total, mem_free;
 
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
@@ -88,12 +89,15 @@ float LinuxParser::MemoryUtilization() {
       }
     }
   }
+  stream.close();
 
   return (mem_total - mem_free) / mem_total;
 }
 
 long LinuxParser::UpTime() {
-  string line, up_time_string, idle_time_string;
+  string line;
+  string up_time_string;
+  string idle_time_string;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
 
   if (stream.is_open()) {
@@ -101,6 +105,7 @@ long LinuxParser::UpTime() {
     std::istringstream linestream(line);
     linestream >> up_time_string >> idle_time_string;
   }
+  stream.close();
 
   return stoi(up_time_string);
 }
@@ -224,7 +229,8 @@ string LinuxParser::Ram(int pid) {
   std::stringstream path;
   path << kProcDirectory << pid << kStatusFilename;
 
-  int ram_kb = ReadStringValueFromFile<int>(path.str(), "VmSize:");
+  // used VmRSS instead of VmSize to be more accurate
+  int ram_kb = ReadStringValueFromFile<int>(path.str(), "VmRSS:");
   std::stringstream ram_mb;
   ram_mb << (ram_kb / 1000);
 
