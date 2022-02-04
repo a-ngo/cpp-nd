@@ -1,0 +1,3 @@
+/home/ngt7lr/workspace/cpp-nd/Memory-Management-Chatbot-Project/build/CMakeFiles/rebuild_cache.dir
+/home/ngt7lr/workspace/cpp-nd/Memory-Management-Chatbot-Project/build/CMakeFiles/edit_cache.dir
+/home/ngt7lr/workspace/cpp-nd/Memory-Management-Chatbot-Project/build/CMakeFiles/membot.dir
