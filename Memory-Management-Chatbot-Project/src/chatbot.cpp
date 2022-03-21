@@ -71,7 +71,7 @@ ChatBot &ChatBot::operator=(const ChatBot &other) {
 }
 
 // move constructor
-Chatbot::ChatBot(Chatbot &&other)
+ChatBot::ChatBot(ChatBot &&other)
     : _image{std::move(other._image)},
       _currentNode{std::move(other._currentNode)},
       _rootNode{std::move(other._rootNode)},
@@ -81,6 +81,7 @@ Chatbot::ChatBot(Chatbot &&other)
 
 // move assignment operator
 ChatBot &ChatBot::operator=(ChatBot &&other) {
+  std::cout << "ChatBot move assignment operator" << std::endl;
   if (this != &other) {
     this->_image = std::move(other._image);
     this->_currentNode = std::move(other._currentNode);
