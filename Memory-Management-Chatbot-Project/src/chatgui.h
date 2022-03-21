@@ -28,7 +28,9 @@ class ChatBotPanelDialog : public wxScrolledWindow {
   ~ChatBotPanelDialog();
 
   // getter / setter
-  std::unique_ptr<ChatLogic> GetChatLogicHandle() { return _chatLogic; }
+  std::unique_ptr<ChatLogic> GetChatLogicHandle() {
+    return std::move(_chatLogic);
+  }
 
   // events
   void paintEvent(wxPaintEvent &evt);
