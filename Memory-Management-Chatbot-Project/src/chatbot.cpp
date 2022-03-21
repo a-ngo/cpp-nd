@@ -43,6 +43,53 @@ ChatBot::~ChatBot() {
 //// STUDENT CODE
 ////
 
+// copy constructor
+ChatBot::ChatBot(const ChatBot &other)
+    : _image{other._image},
+      _currentNode{other._currentNode},
+      _rootNode{other._rootNode},
+      _chatLogic{other._chatLogic} {
+  std::cout << "ChatBot copy constructor" << std::endl;
+}
+
+// copy assignment operator
+ChatBot &ChatBot::operator=(const ChatBot &other) {
+  std::cout << "ChatBot copy assignment operator" << std::endl;
+
+  if (this != &other) {
+    delete this->_image;
+    delete this->_currentNode;
+    delete this->_rootNode;
+    delete this->_chatLogic;
+
+    this->_image = new wxBitmap{*(other._image)};
+    this->_currentNode = new GraphNode{*(other._currentNode)};
+    this->_rootNode = new GraphNode{*(other._rootNode)};
+    this->_chatLogic = new ChatLogic{*(other._chatLogic)};
+  }
+  return *this;
+}
+
+// move constructor
+Chatbot::ChatBot(Chatbot &&other)
+    : _image{std::move(other._image)},
+      _currentNode{std::move(other._currentNode)},
+      _rootNode{std::move(other._rootNode)},
+      _chatLogic{std::move(other._chatLogic)} {
+  std::cout << "ChatBot move constructor" << std::endl;
+}
+
+// move assignment operator
+ChatBot &ChatBot::operator=(ChatBot &&other) {
+  if (this != &other) {
+    this->_image = std::move(other._image);
+    this->_currentNode = std::move(other._currentNode);
+    this->_rootNode = std::move(other._rootNode);
+    this->_chatLogic = std::move(other._chatLogic);
+  }
+  return *this;
+}
+
 ////
 //// EOF STUDENT CODE
 
