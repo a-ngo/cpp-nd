@@ -44,11 +44,11 @@ ChatBot::~ChatBot() {
 ////
 
 // copy constructor
-ChatBot::ChatBot(const ChatBot &other)
-    : _image{other._image},
-      _currentNode{other._currentNode},
-      _rootNode{other._rootNode},
-      _chatLogic{other._chatLogic} {
+ChatBot::ChatBot(const ChatBot &other) {
+  _image = new wxBitmap(*other._image);
+  _currentNode = other._currentNode;
+  _rootNode = other._rootNode;
+  _chatLogic = other._chatLogic;
   std::cout << "ChatBot copy constructor" << std::endl;
 }
 
@@ -59,10 +59,10 @@ ChatBot &ChatBot::operator=(const ChatBot &other) {
   if (this != &other) {
     delete this->_image;
 
-    this->_image = other._image;
-    this->_currentNode = other._currentNode;
-    this->_rootNode = other._rootNode;
-    this->_chatLogic = other._chatLogic;
+    _image = new wxBitmap(*other._image);
+    _currentNode = other._currentNode;
+    _rootNode = other._rootNode;
+    _chatLogic = other._chatLogic;
   }
   return *this;
 }
