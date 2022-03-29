@@ -4,3 +4,6 @@
 [submodule "route-planning"]
 	path = route-planning
 	url = https://github.com/a-ngo/route-planning.git
+[submodule "system-monitor"]
+	path = system-monitor
+	url = https://github.com/a-ngo/system-monitor.git
