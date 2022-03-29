@@ -1,0 +1,3 @@
+[submodule "memory-management-chatbot"]
+	path = memory-management-chatbot
+	url = https://github.com/a-ngo/memory-management-chatbot.git
