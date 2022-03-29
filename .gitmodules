@@ -1,3 +1,6 @@
 [submodule "memory-management-chatbot"]
 	path = memory-management-chatbot
 	url = https://github.com/a-ngo/memory-management-chatbot.git
+[submodule "route-planning"]
+	path = route-planning
+	url = https://github.com/a-ngo/route-planning.git
