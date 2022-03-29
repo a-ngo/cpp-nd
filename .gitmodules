@@ -7,3 +7,6 @@
 [submodule "system-monitor"]
 	path = system-monitor
 	url = https://github.com/a-ngo/system-monitor.git
+[submodule "concurrent-traffic-simulation"]
+	path = concurrent-traffic-simulation
+	url = https://github.com/a-ngo/concurrent-traffic-simulation.git
